@@ -1,0 +1,10 @@
+9
+$1 pelle
+$2 pollo
+$3 palla
+$4 alla
+$5 tta
+$6 tti
+$7 ll
+$8 er
+$9 ere
