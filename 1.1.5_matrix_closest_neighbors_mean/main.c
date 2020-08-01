@@ -5,46 +5,40 @@
 #define MAX_MAT_COLS 5
 
 float evaluate_nn_mean(
-    const int inputMatrix[MAX_MAT_ROWS][MAX_MAT_COLS],
-    unsigned row, unsigned rows,
-    unsigned col, unsigned cols)
+    int inputMatrix[MAX_MAT_ROWS][MAX_MAT_COLS],
+    size_t row, size_t rows,
+    size_t col, size_t cols)
 {
-    //printf("r=%u, c=%u\n", row, col);
-    const unsigned rowStart = row - (row > 0);
-    const unsigned rowEnd   = row + (row <= rows - 2) + (row <= rows - 1);
-    //printf("r in [%u, %u)\n", rowStart, rowEnd);
+    const size_t rowStart = row - (row > 0);
+    const size_t rowEnd   = row + (row <= rows - 2) + (row <= rows - 1);
 
-    const unsigned colStart = col - (col > 0);
-    const unsigned colEnd   = col + (col <= cols - 2) + (col <= cols - 1);
-    //printf("c in [%u, %u)\n", colStart, colEnd);
+    const size_t colStart = col - (col > 0);
+    const size_t colEnd   = col + (col <= cols - 2) + (col <= cols - 1);
+
+    const size_t count = (rowEnd - rowStart) * (colEnd - colStart) - 1;
+    if (0 == count)
+        return (float)0;
 
     int sum = -inputMatrix[row][col];
-    int count = -1;
-
-    for (unsigned r = rowStart; r < rowEnd; ++r)
+    for (size_t r = rowStart; r < rowEnd; ++r)
     {
-        for (unsigned c = colStart; c < colEnd; ++c)
+        for (size_t c = colStart; c < colEnd; ++c)
         {
             sum += inputMatrix[r][c];
-            ++count;
-            //printf("i[%u][%u]=%d\n", r, c, inputMatrix[r][c]);
         }
     }
-
-    //printf("sum=%d\n", sum);
 
     return sum / (float)count;
 }
 
 void evaluate_nn_means(
-    const int inputMatrix[MAX_MAT_ROWS][MAX_MAT_COLS],
-    unsigned rows,
-    unsigned cols,
+    int inputMatrix[MAX_MAT_ROWS][MAX_MAT_COLS],
+    size_t rows, size_t cols,
     float outMatrix[MAX_MAT_ROWS][MAX_MAT_COLS])
 {
-    for (unsigned r = 0; r < rows; ++r)
+    for (size_t r = 0; r < rows; ++r)
     {
-        for (unsigned c = 0; c < cols; ++c)
+        for (size_t c = 0; c < cols; ++c)
         {
             outMatrix[r][c] = evaluate_nn_mean(inputMatrix, r, rows, c, cols);
         }
@@ -53,25 +47,25 @@ void evaluate_nn_means(
 
 int main()
 {
-    unsigned rows = 3;
-    unsigned cols = 4;
+    size_t rows = 3;
+    size_t cols = 4;
 
     int inputMatrix[MAX_MAT_ROWS][MAX_MAT_COLS] =
     {
-         1,  2,  3,  4, 0,
-         5,  6,  7,  8, 0,
-         9, 10, 11, 12, 0,
-         0,  0,  0,  0, 0,
-         0,  0,  0,  0, 0
+        { 1,  2,  3,  4, 0 },
+        { 5,  6,  7,  8, 0 },
+        { 9, 10, 11, 12, 0 },
+        { 0,  0,  0,  0, 0 },
+        { 0,  0,  0,  0, 0 }
     };
 
-    float meanMatrix[MAX_MAT_ROWS][MAX_MAT_COLS] = {};
+    float meanMatrix[MAX_MAT_ROWS][MAX_MAT_COLS] = { 0 };
     evaluate_nn_means(inputMatrix, rows, cols, meanMatrix);
 
-    printf("%u %u\n", rows, cols);
-    for (unsigned r = 0; r < rows; ++r)
+    printf("%zu %zu\n", rows, cols);
+    for (size_t r = 0; r < rows; ++r)
     {
-        for (unsigned c = 0; c < cols; ++c)
+        for (size_t c = 0; c < cols; ++c)
         {
             printf("%f ", meanMatrix[r][c]);
         }
