@@ -129,16 +129,25 @@ void print_dictionary(const Dictionary *dictionary)
 
 void print_compressed_word(FILE *outFile, const char* word, const Dictionary* dictionary)
 {
-    while (*word != '\0')
+    const size_t wordLength = strlen(word);
+    size_t w = 0;
+    while (w < wordLength)
     {
         int replaced = 0;
         for (size_t i = 0; i < dictionary->size; ++i)
         {
             const size_t fromLength = dictionary->replacements[i].from.length;
-            if (0 == strncmp(word, dictionary->replacements[i].from.data, fromLength))
+            
+            // If there are not enough chars, go to the next iteration
+            if (fromLength > wordLength - w)
+            {
+                continue;
+            }
+           
+            if(0 == strncmp(word + w, dictionary->replacements[i].from.data, fromLength))
             {
                 fprintf(outFile, "%s", dictionary->replacements[i].to);
-                word += fromLength;
+                w += fromLength;
                 replaced = 1;
                 break;
             }
@@ -146,7 +155,7 @@ void print_compressed_word(FILE *outFile, const char* word, const Dictionary* di
 
         if (!replaced)
         {
-            fprintf(outFile, "%c", *word++);
+            fprintf(outFile, "%c", word[w++]);
         }
     }
 }
